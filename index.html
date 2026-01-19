@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Halls Shuttle | Secure 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        :root { --red: #E60012; --blue: #007AFF; --charcoal: #1A1A1A; --white: #FFFFFF; --gray: #2A2A2A; --green: #25D366; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
+        body { background: var(--charcoal); color: var(--white); overflow-x: hidden; font-weight: 600; }
+        
+        .status-bar { background: #000; padding: 8px 15px; font-size: 0.65rem; display: flex; justify-content: space-between; border-bottom: 2px solid var(--blue); }
+        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; background: #444; margin-right: 5px; }
+        .on { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
+
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--red); background: #111; }
+        .logo { font-weight: 900; color: var(--red); font-size: 1.1rem; }
+
+        .track { background: #000; padding: 30px 0; overflow-x: auto; display: flex; scroll-snap-type: x mandatory; scrollbar-width: none; border-bottom: 2px solid var(--gray); }
+        .stn { min-width: 33.33%; text-align: center; opacity: 0.3; scroll-snap-align: center; transition: 0.4s; position: relative; }
+        .stn.active { opacity: 1; color: var(--blue); transform: scale(1.1); font-weight: 900; }
+        .stn-dot { width: 14px; height: 14px; background: #fff; border-radius: 50%; margin: 12px auto; }
+        .active .stn-dot { background: var(--blue); box-shadow: 0 0 15px var(--blue); border: 2px solid #fff; }
+
+        .view { display: none; padding: 20px; max-width: 500px; margin: 0 auto; }
+        .view.active { display: block; }
+        .card { background: var(--gray); padding: 20px; border-radius: 4px; margin-bottom: 15px; border-left: 5px solid var(--blue); }
+        .btn { width: 100%; padding: 16px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; border-radius: 4px; }
+        .btn-blue { background: var(--blue); color: white; }
+        .btn-red { background: var(--red); color: white; }
+        
+        input, select, textarea { width: 100%; padding: 14px; background: #000; border: 2px solid #444; color: #fff; margin: 8px 0 18px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="status-bar">
+        <div><span id="c-dot" class="dot"></span> CLOUD: <span id="c-status">OFFLINE</span></div>
+        <div><span id="p-dot" class="dot"></span> MESH ID: <span id="m-id">---</span></div>
+    </div>
+
+    <header><div class="logo">HALLS CONSUL</div></header>
+
+    <div class="track" id="metro-ui"></div>
+
+    <div id="view-boot" class="view active">
+        <h2>SYSTEM BOOT</h2>
+        <button class="btn btn-blue" onclick="app.init('CLOUD')">INIT GLOBAL CLOUD</button>
+        <div style="text-align:center; margin:20px; opacity:0.3; font-size:0.8rem;">-- OR P2P MESH --</div>
+        <input type="text" id="m-target" placeholder="REMOTE PEER ID">
+        <button class="btn" style="background:transparent; border:1px solid #fff; color:#fff" onclick="app.init(document.getElementById('m-target').value)">JOIN MESH</button>
+    </div>
+
+    <div id="view-login" class="view">
+        <h2>LOGIN</h2>
+        <input type="text" id="u-id" placeholder="shuttle@halls.ac">
+        <input type="password" id="u-pin" placeholder="••••">
+        <button class="btn btn-blue" onclick="app.login()">ENTER</button>
+    </div>
+
+    <div id="view-passenger" class="view">
+        <select id="p-from"></select><select id="p-to"></select>
+        <button class="btn btn-blue" onclick="app.request()">BOOK TRIP</button>
+        <div id="p-active"></div>
+    </div>
+
+    <div id="view-driver" class="view">
+        <button class="btn btn-blue" id="d-btn" onclick="app.toggleDuty()">TOGGLE DUTY</button>
+        <div id="d-queue"></div>
+        <button class="btn btn-blue" style="background:white; color:black" onclick="app.next()">NEXT STATION</button>
+    </div>
+
+    <div id="view-admin" class="view">
+        <textarea id="dna-editor" style="height:350px; font-family:monospace; font-size:10px;"></textarea>
+        <button class="btn btn-red" onclick="app.recode()">RECODE DNA</button>
+    </div>
+
+    <script>
+        // --- SECURE CONFIG: CREDENTIALS INTEGRATED ---
+        const SB_URL = 'https://wltghngwfykdiwfzefaa.supabase.co'; 
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsdGdobmd3ZnlrZGl3ZnplZmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4Mzk1NjYsImV4cCI6MjA4NDQxNTU2Nn0.WGP8NMxPRheytwipWCGeTBc7nfPJDESu_thFdqOp6qw';
+        const sb = supabase.createClient(SB_URL, SB_KEY);
+
+        const app = {
+            peer: null, connections: [], 
+            state: {
+                stations: ["Chatteswari", "GEC Circle", "Khulshi", "Sitalpur"],
+                users: [
+                    {id: 'shuttle@halls.ac', name: 'Admin', pass: 'H@11$p2p2026', role: 'admin'},
+                    {id: 'driver', name: 'D. Miller', pass: '1234', role: 'driver', active: false},
+                    {id: '555', name: 'User-1', pass: '1234', role: 'passenger'}
+                ],
+                trips: [], curIdx: 0, ts: Date.now()
+            },
+            user: null,
+
+            async init(mode) {
+                this.peer = new Peer();
+                this.peer.on('open', (id) => {
+                    document.getElementById('m-id').innerText = id.substring(0,8);
+                    document.getElementById('p-dot').classList.add('on');
+                    if(mode === 'CLOUD') this.cloudSync();
+                    else this.peerConnect(mode);
+                });
+                this.peer.on('connection', (c) => {
+                    this.connections.push(c);
+                    c.on('open', () => c.send({type:'SYNC', state: this.state}));
+                    c.on('data', (d) => this.handleSync(d));
+                });
+            },
+
+            async cloudSync() {
+                const { data } = await sb.from('shuttle_state').select('data').eq('id', 1).single();
+                if(data) {
+                    this.state = data.data;
+                    document.getElementById('c-status').innerText = "LIVE";
+                    document.getElementById('c-dot').classList.add('on');
+                    this.showView('login');
+                    this.render();
+                }
+                sb.channel('db').on('postgres_changes', { event:'UPDATE', schema:'public', table:'shuttle_state' }, 
+                p => { if(p.new.data.ts > this.state.ts) { this.state = p.new.data; this.render(); } }).subscribe();
+            },
+
+            handleSync(d) {
+                if(d.type === 'SYNC' && d.state.ts > this.state.ts) {
+                    this.state = d.state;
+                    this.render();
+                }
+            },
+
+            async broadcast() {
+                this.state.ts = Date.now();
+                this.connections.forEach(c => c.send({type:'SYNC', state: this.state}));
+                await sb.from('shuttle_state').update({data: this.state}).eq('id', 1);
+                this.render();
+            },
+
+            login() {
+                const id = document.getElementById('u-id').value;
+                const pin = document.getElementById('u-pin').value;
+                const u = this.state.users.find(x => x.id === id && x.pass === pin);
+                if(u) { this.user = u; this.showView(u.role); this.render(); }
+            },
+
+            showView(v) {
+                document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+                document.getElementById('view-' + v).classList.add('active');
+            },
+
+            render() {
+                this.renderMetro();
+                if(this.user?.role === 'passenger') this.renderPassenger();
+                if(this.user?.role === 'driver') this.renderDriver();
+                if(this.user?.role === 'admin') document.getElementById('dna-editor').value = JSON.stringify(this.state, null, 2);
+            },
+
+            renderMetro() {
+                const ui = document.getElementById('metro-ui'); ui.innerHTML = '';
+                this.state.stations.forEach((s, i) => {
+                    ui.innerHTML += `<div class="stn ${i === this.state.curIdx ? 'active' : ''}">
+                        <div class="stn-dot"></div><div>${s}</div>
+                    </div>`;
+                });
+            },
+
+            request() {
+                this.state.trips.push({id: Date.now(), pId: this.user.id, from: document.getElementById('p-from').value, to: document.getElementById('p-to').value, status: 'PENDING'});
+                this.broadcast();
+            },
+
+            next() {
+                this.state.curIdx = (this.state.curIdx + 1) % this.state.stations.length;
+                this.broadcast();
+            }
+        };
+    </script>
+</body>
+</html>
