@@ -3,147 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Halls Elite | Premium Transit</title>
+    <title>Halls Elite | Secure 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        :root { --uber-blue: #276EF1; --uber-black: #000000; --uber-white: #FFFFFF; --uber-gray: #F6F6F6; --uber-dark-gray: #333333; --status-green: #05A357; }
+        :root { --uber-blue: #276EF1; --uber-black: #000000; --uber-white: #FFFFFF; --uber-gray: #F6F6F6; --status-green: #05A357; --status-amber: #FFC107; --status-red: #E60012; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Uber Move Text", -apple-system, system-ui, sans-serif; }
-        body { background: var(--uber-white); color: var(--uber-black); overflow-x: hidden; transition: 0.3s; }
-        
-        /* Top Navigation */
+        body { background: var(--uber-white); color: var(--uber-black); transition: 0.3s; }
         nav { background: var(--uber-black); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
-        .conn-indicator { display: flex; gap: 10px; font-size: 0.7rem; font-weight: 500; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; display: inline-block; }
+        .logo { font-size: 1.4rem; font-weight: 700; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; display: inline-block; margin-right: 5px; }
         .dot.active { background: var(--status-green); box-shadow: 0 0 8px var(--status-green); }
-
-        /* Views & Layout */
         .view { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 90vh; }
         .view.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Component Styling */
         .card { background: white; border: 1px solid #EEE; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .btn { padding: 16px; border: none; font-weight: 600; cursor: pointer; border-radius: 8px; width: 100%; font-size: 1rem; transition: 0.2s; }
+        .btn { padding: 16px; border: none; font-weight: 600; cursor: pointer; border-radius: 8px; width: 100%; font-size: 1rem; margin-top: 10px; }
         .btn-black { background: var(--uber-black); color: white; }
-        .btn-blue { background: var(--uber-blue); color: white; }
         .btn-outline { background: white; border: 1px solid #DDD; color: var(--uber-black); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #DDD; background: var(--uber-gray); border-radius: 8px; margin: 10px 0 20px; font-size: 1rem; }
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #DDD; background: var(--uber-gray); border-radius: 8px; margin: 8px 0 15px; font-size: 1rem; }
         label { font-size: 0.85rem; font-weight: 600; color: #666; }
-
-        /* Admin Grid */
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 900px) { .admin-grid { grid-template-columns: 1fr; } }
-        
-        /* Trip Stepper (Uber style) */
-        .stepper { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .step { font-size: 0.65rem; text-align: center; color: #AAA; flex: 1; position: relative; }
-        .step.active { color: var(--uber-blue); font-weight: 700; }
-        .step::after { content: ''; height: 2px; width: 100%; background: #EEE; position: absolute; bottom: -8px; left: 0; }
-        .step.active::after { background: var(--uber-blue); }
-
-        /* Fleet Item */
-        .fleet-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #EEE; }
-        .rating { color: #FFC107; font-size: 0.8rem; }
+        .status-badge { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 900; }
+        .pending { background: var(--status-amber); color: black; }
+        .approved { background: var(--status-green); color: white; }
     </style>
 </head>
 <body>
 
     <nav>
         <div class="logo">Halls Elite</div>
-        <div class="conn-indicator">
+        <div style="font-size: 0.7rem;">
             <span><i id="cloud-dot" class="dot"></i> CLOUD</span>
-            <span><i id="mesh-dot" class="dot"></i> MESH</span>
+            <span style="margin-left:10px"><i id="mesh-dot" class="dot"></i> MESH</span>
         </div>
     </nav>
 
     <div id="view-boot" class="view active">
-        <h1 style="margin-top:20vh">Premium Shuttle Service</h1>
-        <p style="color:#666; margin-bottom:30px">Select your connection terminal to begin.</p>
-        <button class="btn btn-black" onclick="app.init('CLOUD')">Access Global Network</button>
+        <h1 style="margin-top:15vh">Elite Transit Network</h1>
+        <p style="color:#666; margin-bottom:30px">Safe. Professional. Always synced.</p>
+        <button class="btn btn-black" onclick="app.init('CLOUD')">Connect Global Cloud</button>
         <div style="margin:20px 0; text-align:center; color:#CCC">— OR —</div>
-        <input type="text" id="m-target" placeholder="Enter Mesh Node ID">
+        <input type="text" id="m-target" placeholder="Mesh Node ID">
         <button class="btn btn-outline" onclick="app.init(document.getElementById('m-target').value)">Join P2P Mesh</button>
     </div>
 
     <div id="view-login" class="view">
-        <h2 style="margin-bottom:20px">Sign In</h2>
-        <label>Operator ID or Email</label>
-        <input type="text" id="u-id" placeholder="Enter your credentials">
-        <label>Security Pin</label>
-        <input type="password" id="u-pin" placeholder="••••">
+        <h2>Welcome Back</h2>
+        <input type="text" id="u-id" placeholder="Email / ID">
+        <input type="password" id="u-pin" placeholder="PIN">
         <button class="btn btn-black" onclick="app.login()">Login</button>
+        <p style="text-align:center; margin-top:20px; font-size:0.9rem">New to Halls? <a href="#" onclick="app.showView('signup')">Sign Up</a></p>
+    </div>
+
+    <div id="view-signup" class="view">
+        <h2>Join the Fleet</h2>
+        <p style="font-size:0.8rem; color:#666; margin-bottom:20px">Your account will require Admin approval.</p>
+        <label>Account Type</label>
+        <select id="s-role">
+            <option value="passenger">Passenger (Rider)</option>
+            <option value="driver">Driver (Partner)</option>
+        </select>
+        <label>Full Name</label><input type="text" id="s-name" placeholder="John Doe">
+        <label>Email / ID</label><input type="text" id="s-id" placeholder="john@example.com">
+        <label>Security PIN (4-6 digits)</label><input type="password" id="s-pin" placeholder="••••">
+        <button class="btn btn-black" onclick="app.signup()">Submit Registration</button>
+        <button class="btn btn-outline" onclick="app.showView('login')">Back to Login</button>
+    </div>
+
+    <div id="view-pending" class="view">
+        <h2 style="margin-top:20vh; color:var(--status-amber)">Account Pending</h2>
+        <p style="margin:20px 0">Your registration has been submitted. An administrator must approve your account before you can book or drive.</p>
+        <button class="btn btn-outline" onclick="app.showView('login')">Logout</button>
     </div>
 
     <div id="view-passenger" class="view">
         <div id="p-booking">
-            <h2 style="margin-bottom:20px">Where to?</h2>
+            <h2 style="margin-bottom:20px">Ready to ride?</h2>
             <div class="card">
-                <label>Pickup Location</label><select id="p-from" onchange="app.maskStops()"></select>
-                <label>Destination Stop</label><select id="p-to"></select>
-                <button class="btn btn-black" onclick="app.request()">Request Shuttle</button>
+                <label>Pickup</label><select id="p-from" onchange="app.maskStops()"></select>
+                <label>Drop-off</label><select id="p-to"></select>
+                <button class="btn btn-black" onclick="app.request()">Confirm Shuttle</button>
             </div>
         </div>
         <div id="p-active-ui"></div>
     </div>
 
     <div id="view-driver" class="view">
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center; background: #000; color: white;">
-            <div>
-                <p style="font-size:0.7rem; opacity:0.7">DUTY STATUS</p>
-                <h3 id="d-status-txt">OFFLINE</h3>
-            </div>
-            <button class="btn btn-blue" style="width:auto; padding:10px 25px" id="d-toggle" onclick="app.toggleDuty()">Go Online</button>
+        <div class="card" style="background:#000; color:white;">
+            <p style="font-size:0.7rem; opacity:0.7">PARTNER STATUS</p>
+            <h3 id="d-status-txt">OFFLINE</h3>
+            <button class="btn btn-blue" style="margin-top:15px" onclick="app.toggleDuty()">Go Online</button>
         </div>
-        
-        <h3 style="margin:25px 0 10px">Incoming Opportunities</h3>
+        <h3 style="margin:25px 0 10px">Rider Requests</h3>
         <div id="d-queue"></div>
-
-        <h3 style="margin:25px 0 10px">Active Manifest</h3>
+        <h3 style="margin:25px 0 10px">Current Trip</h3>
         <div id="d-manifest"></div>
-        
-        <button id="d-nav-btn" class="btn btn-black" style="display:none; margin-top:30px" onclick="app.next()">Arrived at Next Stop</button>
     </div>
 
     <div id="view-admin" class="view">
-        <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center">
-            <h2>Elite Fleet Management</h2>
-            <span id="m-id-full" style="font-size:0.7rem; color:#888"></span>
-        </div>
-
         <div class="admin-grid">
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
-                    <h3>Fleet Overview</h3>
-                    <button class="btn btn-black" style="width:auto; padding:5px 15px; font-size:0.7rem" onclick="app.vAddUser()">+ Add Member</button>
-                </div>
-                <div id="v-users-list" style="max-height:300px; overflow-y:auto"></div>
-                
-                <h3 style="margin:20px 0 10px">System Configuration</h3>
-                <label>Service Name</label><input type="text" id="v-sitename" onchange="app.vSyncInputs()">
-                <label>Vehicle Capacity</label><input type="number" id="v-cap" onchange="app.vSyncInputs()">
-                
-                <h3 style="margin:20px 0 10px">Route Stations</h3>
-                <div id="v-stations-list"></div>
-                <button class="btn btn-outline" style="padding:10px; font-size:0.7rem" onclick="app.vAddStation()">+ Add Station</button>
+                <h3>Fleet & Approval Queue</h3>
+                <div id="v-users-list" style="margin-top:20px"></div>
+                <h3 style="margin-top:30px">Configuration</h3>
+                <label>Network Name</label><input type="text" id="v-sitename" onchange="app.vSyncInputs()">
+                <label>Stations (Comma Separated)</label>
+                <textarea id="v-stations" onchange="app.vSyncStations()" style="height:80px"></textarea>
             </div>
-
             <div class="card" style="background:var(--uber-gray)">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
-                    <h3>DNA (JSON Core)</h3>
-                    <button class="btn btn-black" style="width:auto; padding:5px 15px; font-size:0.7rem" onclick="app.broadcast()">Sync & Save</button>
+                <div style="display:flex; justify-content:space-between">
+                    <h3>DNA Core</h3>
+                    <button class="btn btn-black" style="width:auto; padding:5px 15px; font-size:0.7rem" onclick="app.broadcast()">Save All</button>
                 </div>
-                <textarea id="dna-editor" style="height:500px; font-family:monospace; font-size:11px; margin:0; border:1px solid #CCC"></textarea>
-                <button class="btn btn-red" style="margin-top:10px; font-size:0.7rem; padding:10px" onclick="app.recode()">Force Overwrite DNA</button>
+                <textarea id="dna-editor" style="height:550px; font-family:monospace; font-size:10px; margin-top:10px"></textarea>
             </div>
         </div>
     </div>
 
     <script>
-        // --- SECURE CONFIG ---
         const SB_URL = 'https://wltghngwfykdiwfzefaa.supabase.co'; 
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsdGdobmd3ZnlrZGl3ZnplZmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4Mzk1NjYsImV4cCI6MjA4NDQxNTU2Nn0.WGP8NMxPRheytwipWCGeTBc7nfPJDESu_thFdqOp6qw';
         const sb = supabase.createClient(SB_URL, SB_KEY);
@@ -154,9 +133,8 @@
                 config: { name: "Halls Elite", cap: 12 },
                 stations: ["Chatteswari", "GEC Circle", "Khulshi", "Sitalpur"],
                 users: [
-                    {id: 'shuttle@halls.ac', name: 'Elite Admin', pass: 'H@11$p2p2026', role: 'admin'},
-                    {id: 'driver', name: 'James Wilson', pass: '1234', role: 'driver', phone: '1234567890', vehicle: 'Black Mercedes V-Class', rating: 4.9, active: false},
-                    {id: '555', name: 'Corporate Guest', pass: '1234', role: 'passenger'}
+                    {id: 'shuttle@halls.ac', name: 'Master Admin', pass: 'H@11$p2p2026', role: 'admin', approved: true},
+                    {id: 'driver', name: 'James Wilson', pass: '1234', role: 'driver', approved: true, active: false}
                 ],
                 trips: [], curIdx: 0, ts: Date.now()
             },
@@ -165,7 +143,6 @@
             async init(mode) {
                 this.peer = new Peer();
                 this.peer.on('open', (id) => {
-                    document.getElementById('m-id-full').innerText = "MESH NODE: " + id;
                     document.getElementById('mesh-dot').classList.add('active');
                     if(mode === 'CLOUD') this.cloudSync();
                     else this.peerConnect(mode);
@@ -213,8 +190,27 @@
                 const id = document.getElementById('u-id').value;
                 const pin = document.getElementById('u-pin').value;
                 const u = this.state.users.find(x => x.id === id && x.pass === pin);
-                if(u) { this.user = u; this.showView(u.role); this.render(); }
-                else alert("Authentication Failed.");
+                if(u) {
+                    if(!u.approved && u.role !== 'admin') { this.showView('pending'); return; }
+                    this.user = u;
+                    this.showView(u.role);
+                    this.render();
+                } else alert("Invalid credentials.");
+            },
+
+            signup() {
+                const id = document.getElementById('s-id').value;
+                const name = document.getElementById('s-name').value;
+                const pin = document.getElementById('s-pin').value;
+                const role = document.getElementById('s-role').value;
+
+                if(!id || !name || !pin) return alert("Fill all fields.");
+                if(this.state.users.find(u => u.id === id)) return alert("ID already exists.");
+
+                this.state.users.push({ id, name, pass: pin, role, approved: false, active: false });
+                this.broadcast();
+                alert("Account created. Please wait for admin approval.");
+                this.showView('login');
             },
 
             showView(v) {
@@ -233,143 +229,52 @@
                 if(f.options.length === 0) {
                     this.state.stations.forEach(s => { f.add(new Option(s,s)); t.add(new Option(s,s)); });
                 }
-                
                 const active = this.state.trips.find(x => x.pId === this.user.id);
-                const area = document.getElementById('p-active-ui');
-                const form = document.getElementById('p-booking');
-
-                if(active) {
-                    form.style.display = 'none';
-                    const drv = this.state.users.find(u => u.id === active.dId);
-                    area.innerHTML = `
-                        <div class="stepper">
-                            <div class="step ${active.status === 'PENDING' ? 'active' : ''}">Requested</div>
-                            <div class="step ${active.status === 'ACCEPTED' ? 'active' : ''}">Accepted</div>
-                            <div class="step ${active.status === 'EN_ROUTE' ? 'active' : ''}">En Route</div>
-                        </div>
-                        <div class="card">
-                            <p style="font-size:0.7rem; color:#888">TRIP STATUS</p>
-                            <h3 style="margin-bottom:15px">${active.status}</h3>
-                            <p style="font-size:0.9rem">${active.from} → ${active.to}</p>
-                            ${active.status === 'ACCEPTED' || active.status === 'EN_ROUTE' ? `
-                                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #EEE; display:flex; align-items:center; gap:15px">
-                                    <div style="width:50px; height:50px; background:#EEE; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold">${drv.name[0]}</div>
-                                    <div>
-                                        <p style="font-weight:700">${drv.name} <span class="rating">★ ${drv.rating}</span></p>
-                                        <p style="font-size:0.8rem; color:#666">${drv.vehicle}</p>
-                                    </div>
-                                </div>
-                                <button class="btn btn-black" style="margin-top:20px" onclick="window.open('tel:${drv.phone}')">Contact Driver</button>
-                            ` : ''}
-                        </div>`;
-                } else {
-                    form.style.display = 'block';
-                    area.innerHTML = '';
-                }
-            },
-
-            maskStops() {
-                const p = document.getElementById('p-from').value;
-                Array.from(document.getElementById('p-to').options).forEach(o => o.disabled = (o.value === p));
-            },
-
-            request() {
-                this.state.trips.push({
-                    id: Date.now(), pId: this.user.id, pName: this.user.name,
-                    from: document.getElementById('p-from').value,
-                    to: document.getElementById('p-to').value,
-                    status: 'PENDING'
-                });
-                this.broadcast();
+                document.getElementById('p-active-ui').innerHTML = active ? `<div class="card"><b>Trip to ${active.to}</b><br>Status: ${active.status}</div>` : '';
             },
 
             renderDriver() {
-                const d = this.user;
-                document.getElementById('d-status-txt').innerText = d.active ? "ONLINE" : "OFFLINE";
-                document.getElementById('d-toggle').innerText = d.active ? "Go Offline" : "Go Online";
-                document.getElementById('d-nav-btn').style.display = d.active ? 'block' : 'none';
-
+                document.getElementById('d-status-txt').innerText = this.user.active ? "ONLINE" : "OFFLINE";
                 const q = document.getElementById('d-queue'); q.innerHTML = '';
                 this.state.trips.filter(t => t.status === 'PENDING').forEach(t => {
-                    q.innerHTML += `<div class="card">
-                        <div style="display:flex; justify-content:space-between">
-                            <div><p style="font-weight:700">${t.pName}</p><p style="font-size:0.8rem">${t.from} → ${t.to}</p></div>
-                            <button class="btn btn-black" style="width:auto; padding:8px 20px" onclick="app.accept(${t.id})">Accept</button>
-                        </div>
-                    </div>`;
-                });
-
-                const m = document.getElementById('d-manifest'); m.innerHTML = '';
-                this.state.trips.filter(t => t.status === 'ACCEPTED' || t.status === 'EN_ROUTE').forEach(t => {
-                    m.innerHTML += `<div class="card" style="border-left-color:var(--status-green)">
-                        <p style="font-weight:700">${t.pName}</p>
-                        <p style="font-size:0.8rem">Drop-off: ${t.to}</p>
-                    </div>`;
+                    q.innerHTML += `<div class="card"><b>${t.pName}</b> wants a ride to ${t.to} <button class="btn btn-black" style="width:auto; padding:5px 15px; float:right" onclick="app.accept(${t.id})">Accept</button></div>`;
                 });
             },
 
             toggleDuty() { this.user.active = !this.user.active; this.broadcast(); },
-
-            accept(id) {
-                const t = this.state.trips.find(x => x.id === id);
-                t.status = 'ACCEPTED';
-                t.dId = this.user.id;
-                this.broadcast();
-            },
-
-            next() {
-                this.state.curIdx = (this.state.curIdx + 1) % this.state.stations.length;
-                const now = this.state.stations[this.state.curIdx];
-                this.state.trips.forEach(t => {
-                    if(t.dId === this.user.id && t.status === 'ACCEPTED') t.status = 'EN_ROUTE';
-                    if(t.to === now) t.status = 'COMPLETED';
-                });
-                this.state.trips = this.state.trips.filter(t => t.status !== 'COMPLETED');
-                this.broadcast();
+            accept(id) { 
+                const t = this.state.trips.find(x => x.id === id); 
+                t.status = 'ACCEPTED'; t.dId = this.user.id; 
+                this.broadcast(); 
             },
 
             renderAdmin() {
                 document.getElementById('v-sitename').value = this.state.config.name;
-                document.getElementById('v-cap').value = this.state.config.cap;
+                document.getElementById('v-stations').value = this.state.stations.join(", ");
                 
-                const sList = document.getElementById('v-stations-list'); sList.innerHTML = '';
-                this.state.stations.forEach((s, i) => {
-                    sList.innerHTML += `<div style="display:flex; gap:5px; margin-bottom:5px">
-                        <input type="text" value="${s}" onchange="app.state.stations[${i}]=this.value" style="margin:0">
-                        <button class="btn-red" style="width:40px; margin:0; padding:0; background:none; border:none; color:red" onclick="app.state.stations.splice(${i},1); app.render()">X</button>
-                    </div>`;
-                });
-
                 const uList = document.getElementById('v-users-list'); uList.innerHTML = '';
                 this.state.users.forEach((u, i) => {
-                    uList.innerHTML += `<div class="fleet-item">
-                        <div>
-                            <p style="font-weight:700">${u.name} <span style="font-size:0.6rem; color:#888">(${u.role})</span></p>
-                            ${u.rating ? `<span class="rating">★ ${u.rating}</span>` : ''}
-                        </div>
-                        <button style="border:none; background:none; color:red; cursor:pointer" onclick="app.state.users.splice(${i},1); app.render()">Remove</button>
-                    </div>`;
+                    if(u.role === 'admin') return;
+                    uList.innerHTML += `
+                        <div class="card" style="display:flex; justify-content:space-between; align-items:center">
+                            <div>
+                                <b>${u.name}</b> <span class="status-badge ${u.approved ? 'approved' : 'pending'}">${u.approved ? 'ACTIVE' : 'PENDING'}</span>
+                                <br><small>${u.role} | ${u.id}</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-outline" style="width:auto; padding:5px 10px; margin:0; font-size:0.7rem" onclick="app.toggleUser(${i})">${u.approved ? 'Lock' : 'Approve'}</button>
+                                <button class="btn btn-outline" style="width:auto; padding:5px 10px; margin:0; font-size:0.7rem; color:red" onclick="app.deleteUser(${i})">Delete</button>
+                            </div>
+                        </div>`;
                 });
-
                 document.getElementById('dna-editor').value = JSON.stringify(this.state, null, 2);
             },
 
-            vSyncInputs() {
-                this.state.config.name = document.getElementById('v-sitename').value;
-                this.state.config.cap = parseInt(document.getElementById('v-cap').value);
-            },
-
-            vAddStation() { const n = prompt("Station Name:"); if(n) { this.state.stations.push(n); this.render(); }},
-            vAddUser() {
-                const id = prompt("Email/ID:"); const name = prompt("Name:"); const pass = prompt("PIN:"); const role = prompt("Role (admin, driver, passenger):");
-                if(id && name && pass && role) {
-                    const newUser = {id, name, pass, role, active: false};
-                    if(role === 'driver') { newUser.rating = 5.0; newUser.vehicle = "New Fleet Vehicle"; newUser.phone = "0000000000"; }
-                    this.state.users.push(newUser); this.render();
-                }
-            },
-
-            recode() { try { this.state = JSON.parse(document.getElementById('dna-editor').value); this.broadcast(); } catch(e) { alert("JSON ERROR"); }}
+            toggleUser(i) { this.state.users[i].approved = !this.state.users[i].approved; this.broadcast(); },
+            deleteUser(i) { if(confirm("Delete user?")) { this.state.users.splice(i,1); this.broadcast(); } },
+            vSyncInputs() { this.state.config.name = document.getElementById('v-sitename').value; },
+            vSyncStations() { this.state.stations = document.getElementById('v-stations').value.split(",").map(s => s.trim()); },
+            recode() { try { this.state = JSON.parse(document.getElementById('dna-editor').value); this.broadcast(); } catch(e) { alert("JSON ERROR"); } }
         };
     </script>
 </body>
