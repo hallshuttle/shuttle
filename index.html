@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Halls Elite | Secure 2026</title>
+    <title>Halls Shuttle | Global Elite</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        :root { --uber-blue: #276EF1; --uber-black: #000000; --uber-white: #FFFFFF; --uber-gray: #F6F6F6; --status-green: #05A357; --status-amber: #FFC107; --status-red: #E60012; }
+        :root { --uber-blue: #276EF1; --uber-black: #000000; --uber-white: #FFFFFF; --uber-gray: #F6F6F6; --status-green: #05A357; --status-amber: #FFC107; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Uber Move Text", -apple-system, system-ui, sans-serif; }
         body { background: var(--uber-white); color: var(--uber-black); transition: 0.3s; }
         nav { background: var(--uber-black); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
@@ -18,7 +18,7 @@
         .view.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .card { background: white; border: 1px solid #EEE; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .btn { padding: 16px; border: none; font-weight: 600; cursor: pointer; border-radius: 8px; width: 100%; font-size: 1rem; margin-top: 10px; }
+        .btn { padding: 16px; border: none; font-weight: 600; cursor: pointer; border-radius: 8px; width: 100%; font-size: 1rem; margin-top: 10px; transition: 0.2s; }
         .btn-black { background: var(--uber-black); color: white; }
         .btn-outline { background: white; border: 1px solid #DDD; color: var(--uber-black); }
         input, select, textarea { width: 100%; padding: 14px; border: 1px solid #DDD; background: var(--uber-gray); border-radius: 8px; margin: 8px 0 15px; font-size: 1rem; }
@@ -33,7 +33,7 @@
 <body>
 
     <nav>
-        <div class="logo">Halls Elite</div>
+        <div class="logo">Halls Shuttle</div>
         <div style="font-size: 0.7rem;">
             <span><i id="cloud-dot" class="dot"></i> CLOUD</span>
             <span style="margin-left:10px"><i id="mesh-dot" class="dot"></i> MESH</span>
@@ -41,50 +41,49 @@
     </nav>
 
     <div id="view-boot" class="view active">
-        <h1 style="margin-top:15vh">Elite Transit Network</h1>
-        <p style="color:#666; margin-bottom:30px">Safe. Professional. Always synced.</p>
-        <button class="btn btn-black" onclick="app.init('CLOUD')">Connect Global Cloud</button>
-        <div style="margin:20px 0; text-align:center; color:#CCC">— OR —</div>
-        <input type="text" id="m-target" placeholder="Mesh Node ID">
+        <h1 style="margin-top:15vh">Halls Shuttle Network</h1>
+        <p style="color:#666; margin-bottom:30px">Safe. Reliable. Multi-Party Transit.</p>
+        <button class="btn btn-black" onclick="app.init('CLOUD')">Access Network</button>
+        <input type="text" id="m-target" placeholder="Mesh Node ID" style="margin-top:30px">
         <button class="btn btn-outline" onclick="app.init(document.getElementById('m-target').value)">Join P2P Mesh</button>
     </div>
 
     <div id="view-login" class="view">
-        <h2>Welcome Back</h2>
-        <input type="text" id="u-id" placeholder="Email / ID">
+        <h2>Sign In</h2>
+        <input type="text" id="u-id" placeholder="ID / Email">
         <input type="password" id="u-pin" placeholder="PIN">
         <button class="btn btn-black" onclick="app.login()">Login</button>
-        <p style="text-align:center; margin-top:20px; font-size:0.9rem">New to Halls? <a href="#" onclick="app.showView('signup')">Sign Up</a></p>
+        <p style="text-align:center; margin-top:20px">New user? <a href="#" onclick="app.showView('signup')">Register</a></p>
     </div>
 
     <div id="view-signup" class="view">
         <h2>Join the Fleet</h2>
-        <p style="font-size:0.8rem; color:#666; margin-bottom:20px">Your account will require Admin approval.</p>
-        <label>Account Type</label>
         <select id="s-role">
-            <option value="passenger">Passenger (Rider)</option>
-            <option value="driver">Driver (Partner)</option>
+            <option value="passenger">Passenger</option>
+            <option value="driver">Driver</option>
         </select>
-        <label>Full Name</label><input type="text" id="s-name" placeholder="John Doe">
-        <label>Email / ID</label><input type="text" id="s-id" placeholder="john@example.com">
-        <label>Security PIN (4-6 digits)</label><input type="password" id="s-pin" placeholder="••••">
-        <button class="btn btn-black" onclick="app.signup()">Submit Registration</button>
-        <button class="btn btn-outline" onclick="app.showView('login')">Back to Login</button>
+        <input type="text" id="s-name" placeholder="Full Name">
+        <input type="text" id="s-id" placeholder="Email / ID">
+        <input type="password" id="s-pin" placeholder="PIN">
+        <button class="btn btn-black" onclick="app.signup()">Submit for Approval</button>
+        <button class="btn btn-outline" onclick="app.showView('login')">Back</button>
     </div>
 
     <div id="view-pending" class="view">
-        <h2 style="margin-top:20vh; color:var(--status-amber)">Account Pending</h2>
-        <p style="margin:20px 0">Your registration has been submitted. An administrator must approve your account before you can book or drive.</p>
+        <h2 style="margin-top:20vh; color:var(--status-amber)">Verification Pending</h2>
+        <p>An administrator must approve your account.</p>
         <button class="btn btn-outline" onclick="app.showView('login')">Logout</button>
     </div>
 
     <div id="view-passenger" class="view">
-        <div id="p-booking">
-            <h2 style="margin-bottom:20px">Ready to ride?</h2>
+        <div id="p-booking-ui">
+            <h2>Book a Seat</h2>
             <div class="card">
-                <label>Pickup</label><select id="p-from" onchange="app.maskStops()"></select>
+                <label>City</label><select id="p-city" onchange="app.pSyncRoutes()"></select>
+                <label>Route</label><select id="p-route" onchange="app.pSyncStations()"></select>
+                <label>Pickup</label><select id="p-from"></select>
                 <label>Drop-off</label><select id="p-to"></select>
-                <button class="btn btn-black" onclick="app.request()">Confirm Shuttle</button>
+                <button class="btn btn-black" onclick="app.request()">Request Seat</button>
             </div>
         </div>
         <div id="p-active-ui"></div>
@@ -92,30 +91,38 @@
 
     <div id="view-driver" class="view">
         <div class="card" style="background:#000; color:white;">
-            <p style="font-size:0.7rem; opacity:0.7">PARTNER STATUS</p>
+            <p style="font-size:0.7rem; opacity:0.7">SHUTTLE STATUS</p>
             <h3 id="d-status-txt">OFFLINE</h3>
-            <button class="btn btn-blue" style="margin-top:15px" onclick="app.toggleDuty()">Go Online</button>
+            <div id="d-assignment" style="margin-top:10px; font-size:0.8rem; display:none; color:var(--uber-blue)"></div>
+            <button class="btn btn-blue" id="d-toggle-btn" onclick="app.dShowAssignment()">Go Online</button>
         </div>
-        <h3 style="margin:25px 0 10px">Rider Requests</h3>
+
+        <div id="d-setup" class="card" style="display:none">
+            <label>Deployment City</label><select id="d-city" onchange="app.dSyncRoutes()"></select>
+            <label>Deployment Route</label><select id="d-route"></select>
+            <button class="btn btn-black" onclick="app.toggleDuty()">Start Shift</button>
+        </div>
+
+        <h3 style="margin-top:25px">Route Requests</h3>
         <div id="d-queue"></div>
-        <h3 style="margin:25px 0 10px">Current Trip</h3>
+        <h3 style="margin-top:25px">Active Manifest</h3>
         <div id="d-manifest"></div>
+        <button id="d-next-btn" class="btn btn-black" style="display:none; margin-top:20px" onclick="app.next()">Arrived at Next Stop</button>
     </div>
 
     <div id="view-admin" class="view">
         <div class="admin-grid">
             <div class="card">
-                <h3>Fleet & Approval Queue</h3>
-                <div id="v-users-list" style="margin-top:20px"></div>
-                <h3 style="margin-top:30px">Configuration</h3>
-                <label>Network Name</label><input type="text" id="v-sitename" onchange="app.vSyncInputs()">
-                <label>Stations (Comma Separated)</label>
-                <textarea id="v-stations" onchange="app.vSyncStations()" style="height:80px"></textarea>
+                <h3>Fleet Manager</h3>
+                <div id="v-users-list" style="margin-top:15px"></div>
+                <h3 style="margin-top:30px">Network Nodes</h3>
+                <div id="v-network-list"></div>
+                <button class="btn btn-outline" style="font-size:0.7rem; padding:10px" onclick="app.vAddCity()">+ Add City</button>
             </div>
             <div class="card" style="background:var(--uber-gray)">
                 <div style="display:flex; justify-content:space-between">
                     <h3>DNA Core</h3>
-                    <button class="btn btn-black" style="width:auto; padding:5px 15px; font-size:0.7rem" onclick="app.broadcast()">Save All</button>
+                    <button class="btn btn-black" style="width:auto; padding:5px 15px; font-size:0.7rem" onclick="app.broadcast()">Global Save</button>
                 </div>
                 <textarea id="dna-editor" style="height:550px; font-family:monospace; font-size:10px; margin-top:10px"></textarea>
             </div>
@@ -130,19 +137,15 @@
         const app = {
             peer: null, connections: [],
             state: {
-                config: { name: "Halls Elite", cap: 12 },
-                stations: ["Chatteswari", "GEC Circle", "Khulshi", "Sitalpur"],
-                users: [
-                    {id: 'shuttle@halls.ac', name: 'Master Admin', pass: 'H@11$p2p2026', role: 'admin', approved: true},
-                    {id: 'driver', name: 'James Wilson', pass: '1234', role: 'driver', approved: true, active: false}
-                ],
-                trips: [], curIdx: 0, ts: Date.now()
+                cities: [{ name: "City A", routes: [{ name: "Route 1", stations: ["Stn 1", "Stn 2", "Stn 3"] }] }],
+                users: [{id: 'shuttle@halls.ac', name: 'Master Admin', pass: 'H@11$p2p2026', role: 'admin', approved: true}],
+                trips: [], config: { cap: 12 }, curIdx: 0, ts: Date.now()
             },
             user: null,
 
             async init(mode) {
                 this.peer = new Peer();
-                this.peer.on('open', (id) => {
+                this.peer.on('open', () => {
                     document.getElementById('mesh-dot').classList.add('active');
                     if(mode === 'CLOUD') this.cloudSync();
                     else this.peerConnect(mode);
@@ -156,14 +159,8 @@
 
             async cloudSync() {
                 const { data } = await sb.from('shuttle_state').select('data').eq('id', 1).single();
-                if(data) {
-                    this.state = data.data;
-                    document.getElementById('cloud-dot').classList.add('active');
-                    this.showView('login');
-                    this.render();
-                }
-                sb.channel('db').on('postgres_changes', { event:'UPDATE', schema:'public', table:'shuttle_state' }, 
-                p => { if(p.new.data.ts > this.state.ts) { this.state = p.new.data; this.render(); } }).subscribe();
+                if(data) { this.state = data.data; document.getElementById('cloud-dot').classList.add('active'); this.showView('login'); this.render(); }
+                sb.channel('db').on('postgres_changes', { event:'UPDATE', schema:'public', table:'shuttle_state' }, p => { if(p.new.data.ts > this.state.ts) { this.state = p.new.data; this.render(); } }).subscribe();
             },
 
             peerConnect(id) {
@@ -172,12 +169,7 @@
                 c.on('data', (d) => this.handleSync(d));
             },
 
-            handleSync(d) {
-                if(d.type === 'SYNC' && d.state.ts > this.state.ts) {
-                    this.state = d.state;
-                    this.render();
-                }
-            },
+            handleSync(d) { if(d.type === 'SYNC' && d.state.ts > this.state.ts) { this.state = d.state; this.render(); } },
 
             async broadcast() {
                 this.state.ts = Date.now();
@@ -190,33 +182,18 @@
                 const id = document.getElementById('u-id').value;
                 const pin = document.getElementById('u-pin').value;
                 const u = this.state.users.find(x => x.id === id && x.pass === pin);
-                if(u) {
-                    if(!u.approved && u.role !== 'admin') { this.showView('pending'); return; }
-                    this.user = u;
-                    this.showView(u.role);
-                    this.render();
-                } else alert("Invalid credentials.");
+                if(u) { if(!u.approved && u.role !== 'admin') { this.showView('pending'); return; } this.user = u; this.showView(u.role); this.render(); } else alert("Invalid Login.");
             },
 
             signup() {
-                const id = document.getElementById('s-id').value;
-                const name = document.getElementById('s-name').value;
-                const pin = document.getElementById('s-pin').value;
-                const role = document.getElementById('s-role').value;
-
+                const id = document.getElementById('s-id').value; const name = document.getElementById('s-name').value;
+                const pin = document.getElementById('s-pin').value; const role = document.getElementById('s-role').value;
                 if(!id || !name || !pin) return alert("Fill all fields.");
-                if(this.state.users.find(u => u.id === id)) return alert("ID already exists.");
-
                 this.state.users.push({ id, name, pass: pin, role, approved: false, active: false });
-                this.broadcast();
-                alert("Account created. Please wait for admin approval.");
-                this.showView('login');
+                this.broadcast(); alert("Requested."); this.showView('login');
             },
 
-            showView(v) {
-                document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-                document.getElementById('view-' + v).classList.add('active');
-            },
+            showView(v) { document.querySelectorAll('.view').forEach(el => el.classList.remove('active')); document.getElementById('view-' + v).classList.add('active'); },
 
             render() {
                 if(this.user?.role === 'passenger') this.renderPassenger();
@@ -225,55 +202,100 @@
             },
 
             renderPassenger() {
-                const f = document.getElementById('p-from'); const t = document.getElementById('p-to');
-                if(f.options.length === 0) {
-                    this.state.stations.forEach(s => { f.add(new Option(s,s)); t.add(new Option(s,s)); });
-                }
+                const pc = document.getElementById('p-city');
+                if(pc.options.length === 0) { this.state.cities.forEach(c => pc.add(new Option(c.name, c.name))); this.pSyncRoutes(); }
                 const active = this.state.trips.find(x => x.pId === this.user.id);
-                document.getElementById('p-active-ui').innerHTML = active ? `<div class="card"><b>Trip to ${active.to}</b><br>Status: ${active.status}</div>` : '';
+                document.getElementById('p-booking-ui').style.display = active ? 'none' : 'block';
+                document.getElementById('p-active-ui').innerHTML = active ? `<div class="card"><b>Seat Reserved: ${active.route}</b><br>Station: ${active.from} → ${active.to}<br>Status: ${active.status}</div>` : '';
+            },
+            pSyncRoutes() {
+                const city = this.state.cities.find(c => c.name === document.getElementById('p-city').value);
+                const pr = document.getElementById('p-route'); pr.innerHTML = '';
+                city.routes.forEach(r => pr.add(new Option(r.name, r.name))); this.pSyncStations();
+            },
+            pSyncStations() {
+                const city = this.state.cities.find(c => c.name === document.getElementById('p-city').value);
+                const route = city.routes.find(r => r.name === document.getElementById('p-route').value);
+                const pf = document.getElementById('p-from'); const pt = document.getElementById('p-to');
+                pf.innerHTML = ''; pt.innerHTML = ''; route.stations.forEach(s => { pf.add(new Option(s,s)); pt.add(new Option(s,s)); });
+            },
+
+            dShowAssignment() {
+                if(this.user.active) this.toggleDuty();
+                else {
+                    document.getElementById('d-setup').style.display = 'block';
+                    const dc = document.getElementById('d-city'); dc.innerHTML = '';
+                    this.state.cities.forEach(c => dc.add(new Option(c.name, c.name))); this.dSyncRoutes();
+                }
+            },
+            dSyncRoutes() {
+                const city = this.state.cities.find(c => c.name === document.getElementById('d-city').value);
+                const dr = document.getElementById('d-route'); dr.innerHTML = '';
+                city.routes.forEach(r => dr.add(new Option(r.name, r.name)));
+            },
+            toggleDuty() {
+                this.user.active = !this.user.active;
+                if(this.user.active) {
+                    this.user.curCity = document.getElementById('d-city').value; this.user.curRoute = document.getElementById('d-route').value;
+                    document.getElementById('d-setup').style.display = 'none';
+                    document.getElementById('d-assignment').innerText = `DEPLOYED: ${this.user.curCity} - ${this.user.curRoute}`;
+                    document.getElementById('d-assignment').style.display = 'block';
+                    document.getElementById('d-toggle-btn').innerText = "End Shift";
+                } else { document.getElementById('d-assignment').style.display = 'none'; document.getElementById('d-toggle-btn').innerText = "Go Online"; }
+                document.getElementById('d-status-txt').innerText = this.user.active ? "ONLINE" : "OFFLINE"; this.broadcast();
             },
 
             renderDriver() {
-                document.getElementById('d-status-txt').innerText = this.user.active ? "ONLINE" : "OFFLINE";
                 const q = document.getElementById('d-queue'); q.innerHTML = '';
-                this.state.trips.filter(t => t.status === 'PENDING').forEach(t => {
-                    q.innerHTML += `<div class="card"><b>${t.pName}</b> wants a ride to ${t.to} <button class="btn btn-black" style="width:auto; padding:5px 15px; float:right" onclick="app.accept(${t.id})">Accept</button></div>`;
-                });
+                const m = document.getElementById('d-manifest'); m.innerHTML = '';
+                if(this.user.active) {
+                    document.getElementById('d-next-btn').style.display = 'block';
+                    this.state.trips.filter(t => t.status === 'PENDING' && t.city === this.user.curCity && t.route === this.user.curRoute)
+                    .forEach(t => {
+                        const currentLoad = this.state.trips.filter(x => x.dId === this.user.id && x.status === 'ONBOARD').length;
+                        q.innerHTML += `<div class="card"><b>${t.pName}</b>: ${t.from} to ${t.to} 
+                        <button class="btn btn-black" style="width:auto; padding:5px; float:right" ${currentLoad >= this.state.config.cap ? 'disabled' : ''} onclick="app.accept(${t.id})">Accept Seat</button></div>`;
+                    });
+                    this.state.trips.filter(t => t.dId === this.user.id && t.status === 'ONBOARD').forEach(t => {
+                        m.innerHTML += `<div class="card" style="border-left:4px solid var(--status-green)"><b>${t.pName}</b> (Dest: ${t.to})</div>`;
+                    });
+                } else { document.getElementById('d-next-btn').style.display = 'none'; }
+            },
+            accept(id) { const t = this.state.trips.find(x => x.id === id); t.status = 'ONBOARD'; t.dId = this.user.id; this.broadcast(); },
+            next() {
+                const city = this.state.cities.find(c => c.name === this.user.curCity);
+                const route = city.routes.find(r => r.name === this.user.curRoute);
+                this.state.curIdx = (this.state.curIdx + 1) % route.stations.length;
+                const now = route.stations[this.state.curIdx];
+                this.state.trips = this.state.trips.filter(t => !(t.dId === this.user.id && t.to === now));
+                this.broadcast();
             },
 
-            toggleDuty() { this.user.active = !this.user.active; this.broadcast(); },
-            accept(id) { 
-                const t = this.state.trips.find(x => x.id === id); 
-                t.status = 'ACCEPTED'; t.dId = this.user.id; 
-                this.broadcast(); 
+            request() {
+                this.state.trips.push({
+                    id: Date.now(), pId: this.user.id, pName: this.user.name,
+                    city: document.getElementById('p-city').value,
+                    route: document.getElementById('p-route').value,
+                    from: document.getElementById('p-from').value, to: document.getElementById('p-to').value, status: 'PENDING'
+                });
+                this.broadcast();
             },
 
             renderAdmin() {
-                document.getElementById('v-sitename').value = this.state.config.name;
-                document.getElementById('v-stations').value = this.state.stations.join(", ");
-                
                 const uList = document.getElementById('v-users-list'); uList.innerHTML = '';
                 this.state.users.forEach((u, i) => {
                     if(u.role === 'admin') return;
-                    uList.innerHTML += `
-                        <div class="card" style="display:flex; justify-content:space-between; align-items:center">
-                            <div>
-                                <b>${u.name}</b> <span class="status-badge ${u.approved ? 'approved' : 'pending'}">${u.approved ? 'ACTIVE' : 'PENDING'}</span>
-                                <br><small>${u.role} | ${u.id}</small>
-                            </div>
-                            <div>
-                                <button class="btn btn-outline" style="width:auto; padding:5px 10px; margin:0; font-size:0.7rem" onclick="app.toggleUser(${i})">${u.approved ? 'Lock' : 'Approve'}</button>
-                                <button class="btn btn-outline" style="width:auto; padding:5px 10px; margin:0; font-size:0.7rem; color:red" onclick="app.deleteUser(${i})">Delete</button>
-                            </div>
-                        </div>`;
+                    uList.innerHTML += `<div class="card"><b>${u.name}</b> <span class="status-badge ${u.approved?'approved':'pending'}">${u.approved?'ACTIVE':'PENDING'}</span><br><small>${u.role} | ${u.id}</small><button class="btn btn-outline" style="width:auto; padding:5px; margin-top:5px" onclick="app.toggleUser(${i})">${u.approved?'Lock':'Approve'}</button></div>`;
+                });
+                const nList = document.getElementById('v-network-list'); nList.innerHTML = '';
+                this.state.cities.forEach((c, ci) => {
+                    nList.innerHTML += `<div class="card"><b>${c.name}</b> <button class="btn-outline" style="float:right; border:none; color:red" onclick="app.state.cities.splice(${ci},1); app.render()">X</button><br><button class="btn btn-outline" style="font-size:0.6rem; padding:5px" onclick="app.vAddRoute(${ci})">+ Add Route</button></div>`;
                 });
                 document.getElementById('dna-editor').value = JSON.stringify(this.state, null, 2);
             },
-
             toggleUser(i) { this.state.users[i].approved = !this.state.users[i].approved; this.broadcast(); },
-            deleteUser(i) { if(confirm("Delete user?")) { this.state.users.splice(i,1); this.broadcast(); } },
-            vSyncInputs() { this.state.config.name = document.getElementById('v-sitename').value; },
-            vSyncStations() { this.state.stations = document.getElementById('v-stations').value.split(",").map(s => s.trim()); },
+            vAddCity() { const n = prompt("City Name:"); if(n) { this.state.cities.push({name:n, routes:[]}); this.render(); }},
+            vAddRoute(ci) { const n = prompt("Route Name:"); const s = prompt("Stations (comma sep):"); if(n && s) { this.state.cities[ci].routes.push({name:n, stations: s.split(",").map(x=>x.trim())}); this.render(); }},
             recode() { try { this.state = JSON.parse(document.getElementById('dna-editor').value); this.broadcast(); } catch(e) { alert("JSON ERROR"); } }
         };
     </script>
