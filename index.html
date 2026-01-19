@@ -3,39 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Halls Shuttle | Visual Consul 2026</title>
+    <title>Halls Shuttle | Secure 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style id="theme-engine">
+        :root { --p: #E60012; --s: #007AFF; --bg: #1A1A1A; --card: #2A2A2A; --txt: #FFFFFF; }
+    </style>
     <style>
-        :root { --red: #E60012; --blue: #007AFF; --charcoal: #1A1A1A; --white: #FFFFFF; --gray: #2A2A2A; --green: #25D366; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
-        body { background: var(--charcoal); color: var(--white); overflow-x: hidden; font-weight: 600; }
-        
-        .status-bar { background: #000; padding: 8px 15px; font-size: 0.65rem; display: flex; justify-content: space-between; border-bottom: 2px solid var(--blue); }
+        body { background: var(--bg); color: var(--txt); overflow-x: hidden; font-weight: 600; transition: background 0.4s, color 0.4s; }
+        .status-bar { background: #000; padding: 8px 15px; font-size: 0.65rem; display: flex; justify-content: space-between; border-bottom: 2px solid var(--s); }
         .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; background: #444; margin-right: 5px; }
         .on { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
-
-        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--red); background: #111; }
-        .logo { font-weight: 900; color: var(--red); font-size: 1.2rem; }
-
-        .track { background: #000; padding: 30px 0; overflow-x: auto; display: flex; scroll-snap-type: x mandatory; scrollbar-width: none; border-bottom: 2px solid var(--gray); }
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--p); background: #111; }
+        .logo { font-weight: 900; color: var(--p); font-size: 1.2rem; }
+        .track { background: #000; padding: 30px 0; overflow-x: auto; display: flex; scroll-snap-type: x mandatory; scrollbar-width: none; border-bottom: 2px solid var(--card); }
         .stn { min-width: 33.33%; text-align: center; opacity: 0.3; scroll-snap-align: center; transition: 0.4s; position: relative; }
-        .stn.active { opacity: 1; color: var(--blue); transform: scale(1.1); font-weight: 900; }
+        .stn.active { opacity: 1; color: var(--s); transform: scale(1.1); font-weight: 900; }
         .stn-dot { width: 14px; height: 14px; background: #fff; border-radius: 50%; margin: 12px auto; }
-        .active .stn-dot { background: var(--blue); box-shadow: 0 0 15px var(--blue); border: 2px solid #fff; }
-
+        .active .stn-dot { background: var(--s); box-shadow: 0 0 15px var(--s); border: 2px solid #fff; }
         .view { display: none; padding: 20px; max-width: 500px; margin: 0 auto; }
         .view.active { display: block; }
-        .card { background: var(--gray); padding: 20px; border-radius: 4px; margin-bottom: 15px; border-left: 5px solid var(--blue); }
+        .card { background: var(--card); padding: 20px; border-radius: 4px; margin-bottom: 15px; border-left: 5px solid var(--s); }
         .btn { width: 100%; padding: 16px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; border-radius: 4px; }
-        .btn-blue { background: var(--blue); color: white; }
-        .btn-red { background: var(--red); color: white; }
-        .btn-green { background: var(--green); color: white; }
-        .btn-outline { background: transparent; border: 1px solid white; color: white; }
-        
+        .btn-blue { background: var(--s); color: white; }
+        .btn-red { background: var(--p); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--txt); color: var(--txt); }
         input, select, textarea { width: 100%; padding: 14px; background: #000; border: 2px solid #444; color: #fff; margin: 8px 0 18px 0; border-radius: 4px; }
-        label { font-size: 0.7rem; color: var(--blue); text-transform: uppercase; font-weight: 900; }
-        .pill { display: inline-block; padding: 5px 12px; background: var(--blue); color: white; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
+        label { font-size: 0.7rem; color: var(--s); text-transform: uppercase; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -45,29 +40,30 @@
         <div><span id="p-dot" class="dot"></span> MESH ID: <span id="m-id">---</span></div>
     </div>
 
-    <header><div class="logo">HALLS CONSUL</div></header>
+    <header><div class="logo" id="site-logo">HALLS CONSUL</div></header>
 
-    <div class="track" id="metro-ui"></div>
+    <div id="metro-ui" class="track"></div>
 
     <div id="view-boot" class="view active">
         <h2>SYSTEM BOOT</h2>
-        <button class="btn btn-blue" onclick="app.init('CLOUD')">INIT GLOBAL CLOUD</button>
+        <button class="btn btn-blue" onclick="app.init('CLOUD')">CONNECT TO GLOBAL CLOUD</button>
         <div style="text-align:center; margin:20px; opacity:0.3; font-size:0.8rem;">-- OR P2P MESH --</div>
         <input type="text" id="m-target" placeholder="REMOTE PEER ID">
         <button class="btn btn-outline" onclick="app.init(document.getElementById('m-target').value)">JOIN MESH</button>
     </div>
 
     <div id="view-login" class="view">
-        <h2>LOGIN</h2>
-        <input type="text" id="u-id" placeholder="shuttle@halls.ac">
+        <h2>SECURE LOGIN</h2>
+        <label>Operator ID / Email</label>
+        <input type="text" id="u-id" placeholder="Enter your ID"> <label>Security Pin</label>
         <input type="password" id="u-pin" placeholder="••••">
-        <button class="btn btn-blue" onclick="app.login()">ENTER</button>
+        <button class="btn btn-blue" onclick="app.login()">AUTHENTICATE</button>
     </div>
 
     <div id="view-passenger" class="view">
-        <label>Pickup</label><select id="p-from" onchange="app.maskStops()"></select>
-        <label>Drop-off</label><select id="p-to"></select>
-        <button class="btn btn-blue" onclick="app.request()">BOOK TRIP</button>
+        <label>Pickup Station</label><select id="p-from" onchange="app.maskStops()"></select>
+        <label>Destination Stop</label><select id="p-to"></select>
+        <button class="btn btn-blue" onclick="app.request()">REQUEST RIDE</button>
         <div id="p-active"></div>
     </div>
 
@@ -78,10 +74,11 @@
     </div>
 
     <div id="view-admin" class="view">
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:20px;">
-            <button class="btn btn-outline" style="font-size:0.6rem; padding:10px" onclick="app.adminTab('visual')">VISUAL</button>
-            <button class="btn btn-outline" style="font-size:0.6rem; padding:10px" onclick="app.adminTab('dna')">DNA</button>
-            <button class="btn btn-outline" style="font-size:0.6rem; padding:10px" onclick="app.adminTab('ledger')">LOGS</button>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; margin-bottom:20px;">
+            <button class="btn btn-outline" style="font-size:0.5rem; padding:10px" onclick="app.adminTab('visual')">VISUAL</button>
+            <button class="btn btn-outline" style="font-size:0.5rem; padding:10px" onclick="app.adminTab('theme')">THEME</button>
+            <button class="btn btn-outline" style="font-size:0.5rem; padding:10px" onclick="app.adminTab('dna')">DNA</button>
+            <button class="btn btn-outline" style="font-size:0.5rem; padding:10px" onclick="app.adminTab('ledger')">LOGS</button>
         </div>
 
         <div id="a-visual" class="a-tab">
@@ -91,28 +88,42 @@
                 <label>Capacity</label>
                 <input type="number" id="v-cap" onchange="app.vUpdate()">
             </div>
-            <h3>STATIONS</h3>
-            <div id="v-stations-list"></div>
+            <h3>STATIONS</h3><div id="v-stations-list"></div>
             <button class="btn btn-blue" style="padding:10px; font-size:0.7rem" onclick="app.vAddStation()">+ ADD STATION</button>
-            <h3 style="margin-top:20px">USERS</h3>
-            <div id="v-users-list"></div>
+            <h3 style="margin-top:20px">FLEET USERS</h3><div id="v-users-list"></div>
             <button class="btn btn-blue" style="padding:10px; font-size:0.7rem" onclick="app.vAddUser()">+ ADD USER</button>
             <button class="btn btn-green" style="margin-top:30px" onclick="app.broadcast()">SAVE & SYNC ALL</button>
         </div>
 
+        <div id="a-theme" class="a-tab" style="display:none">
+            <h3>THEME ENGINE</h3>
+            <div class="card">
+                <label>Primary (Accent)</label><input type="color" id="t-p" onchange="app.tUpdate()">
+                <label>Secondary (Utility)</label><input type="color" id="t-s" onchange="app.tUpdate()">
+                <label>Background</label><input type="color" id="t-bg" onchange="app.tUpdate()">
+                <div style="margin-top:15px; display:flex; align-items:center; gap:10px">
+                   <input type="checkbox" id="t-night" style="width:20px; height:20px; margin:0" onchange="app.vUpdate()">
+                   <label style="margin:0">Night Mode (Auto-Background)</label>
+                </div>
+                <button class="btn btn-green" style="margin-top:20px" onclick="app.broadcast()">APPLY THEME</button>
+            </div>
+        </div>
+
         <div id="a-dna" class="a-tab" style="display:none">
+            <h3>MASTER DNA EDITOR</h3>
             <textarea id="dna-editor" style="height:350px; font-family:monospace; font-size:10px;"></textarea>
-            <button class="btn btn-red" onclick="app.recode()">RECODE DNA</button>
+            <button class="btn btn-red" onclick="app.recode()">OVERWRITE DNA</button>
         </div>
 
         <div id="a-ledger" class="a-tab" style="display:none">
             <h3 id="stat-total">TRIPS: 0</h3>
             <div id="ledger-box" style="font-size:0.7rem; background:#000; padding:15px; height:200px; overflow-y:auto;"></div>
-            <button class="btn btn-outline" onclick="app.purge()">PURGE LOGS</button>
+            <button class="btn btn-outline" onclick="app.purge()">PURGE SESSION</button>
         </div>
     </div>
 
     <script>
+        // --- SECURE CONFIG: CREDENTIALS INTEGRATED ---
         const SB_URL = 'https://wltghngwfykdiwfzefaa.supabase.co'; 
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsdGdobmd3ZnlrZGl3ZnplZmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4Mzk1NjYsImV4cCI6MjA4NDQxNTU2Nn0.WGP8NMxPRheytwipWCGeTBc7nfPJDESu_thFdqOp6qw';
         const sb = supabase.createClient(SB_URL, SB_KEY);
@@ -127,7 +138,8 @@
                     {id: 'driver', name: 'D. Miller', pass: '1234', role: 'driver', active: false},
                     {id: '555', name: 'User-1', pass: '1234', role: 'passenger'}
                 ],
-                config: { name: "Halls Consul", cap: 10 },
+                config: { name: "Halls Consul", cap: 10, nightMode: false },
+                theme: { p: "#E60012", s: "#007AFF", bg: "#1A1A1A" },
                 trips: [], history: [], curIdx: 0, ts: Date.now()
             },
             user: null,
@@ -185,7 +197,7 @@
                 const pin = document.getElementById('u-pin').value;
                 const u = this.state.users.find(x => x.id === id && x.pass === pin);
                 if(u) { this.user = u; this.showView(u.role); this.render(); }
-                else alert("ACCESS DENIED");
+                else alert("LOGIN FAILED: IDENTITY NOT VERIFIED");
             },
 
             showView(v) {
@@ -194,10 +206,18 @@
             },
 
             render() {
+                this.applyTheme();
+                document.getElementById('site-logo').innerText = this.state.config.name;
                 this.renderMetro();
                 if(this.user?.role === 'passenger') this.renderPassenger();
                 if(this.user?.role === 'driver') this.renderDriver();
                 if(this.user?.role === 'admin') this.renderAdmin();
+            },
+
+            applyTheme() {
+                const t = this.state.theme;
+                const bg = this.state.config.nightMode ? "#000000" : t.bg;
+                document.getElementById('theme-engine').innerHTML = `:root { --p: ${t.p}; --s: ${t.s}; --bg: ${bg}; --card: #2A2A2A; --txt: #FFFFFF; }`;
             },
 
             renderMetro() {
@@ -206,7 +226,7 @@
                     const wait = this.state.trips.filter(t => t.from === s && t.status === 'PENDING').length;
                     ui.innerHTML += `<div class="stn ${i === this.state.curIdx ? 'active' : ''}">
                         ${wait > 0 ? `<div class="badge">${wait}</div>` : ''}
-                        <div class="stn-dot"></div><div>${s}</div>
+                        <div class="stn-dot"></div><div style="font-size:0.6rem">${s.toUpperCase()}</div>
                     </div>`;
                 });
             },
@@ -214,26 +234,39 @@
             renderAdmin() {
                 document.getElementById('v-sitename').value = this.state.config.name;
                 document.getElementById('v-cap').value = this.state.config.cap;
+                document.getElementById('t-p').value = this.state.theme.p;
+                document.getElementById('t-s').value = this.state.theme.s;
+                document.getElementById('t-bg').value = this.state.theme.bg;
+                document.getElementById('t-night').checked = this.state.config.nightMode;
+                
                 const sList = document.getElementById('v-stations-list'); sList.innerHTML = '';
                 this.state.stations.forEach((s, i) => {
                     sList.innerHTML += `<div style="display:flex; gap:5px; margin-bottom:5px"><input type="text" value="${s}" onchange="app.state.stations[${i}]=this.value" style="margin:0"><button class="btn-red" style="width:40px; margin:0" onclick="app.state.stations.splice(${i},1); app.render()">X</button></div>`;
                 });
                 const uList = document.getElementById('v-users-list'); uList.innerHTML = '';
                 this.state.users.forEach((u, i) => {
-                    uList.innerHTML += `<div class="card" style="padding:10px; font-size:0.8rem"><b>${u.role.toUpperCase()}:</b> ${u.name}<button class="pill" style="background:var(--red); float:right" onclick="app.state.users.splice(${i},1); app.render()">DEL</button></div>`;
+                    uList.innerHTML += `<div class="card" style="padding:10px; font-size:0.8rem"><b>${u.role.toUpperCase()}:</b> ${u.name}<button class="btn-red" style="float:right; width:auto; padding:5px" onclick="app.state.users.splice(${i},1); app.render()">DEL</button></div>`;
                 });
                 document.getElementById('dna-editor').value = JSON.stringify(this.state, null, 2);
+            },
+
+            tUpdate() {
+                this.state.theme.p = document.getElementById('t-p').value;
+                this.state.theme.s = document.getElementById('t-s').value;
+                this.state.theme.bg = document.getElementById('t-bg').value;
+                this.applyTheme();
             },
 
             vUpdate() {
                 this.state.config.name = document.getElementById('v-sitename').value;
                 this.state.config.cap = parseInt(document.getElementById('v-cap').value);
+                this.state.config.nightMode = document.getElementById('t-night').checked;
+                this.applyTheme();
             },
 
-            vAddStation() { const n = prompt("Station Name:"); if(n) { this.state.stations.push(n); this.render(); }},
-
+            vAddStation() { const n = prompt("New Station Name:"); if(n) { this.state.stations.push(n); this.render(); }},
             vAddUser() {
-                const id = prompt("Email/ID:"); const name = prompt("Name:"); const pass = prompt("PIN:"); const role = prompt("Role (admin, driver, passenger):");
+                const id = prompt("Assign ID (Email or Number):"); const name = prompt("Legal Name:"); const pass = prompt("Access PIN:"); const role = prompt("Role (admin, driver, passenger):");
                 if(id && name && pass && role) { this.state.users.push({id, name, pass, role, active: false}); this.render(); }
             },
 
@@ -252,7 +285,7 @@
                 this.broadcast();
             },
 
-            recode() { try { this.state = JSON.parse(document.getElementById('dna-editor').value); this.broadcast(); } catch(e) { alert("JSON ERROR"); }}
+            recode() { try { this.state = JSON.parse(document.getElementById('dna-editor').value); this.broadcast(); } catch(e) { alert("ERROR: INVALID DNA CODE"); }}
         };
     </script>
 </body>
