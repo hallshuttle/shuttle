@@ -3,157 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Halls Shuttle | Master Visual 2026</title>
+    <title>Halls Elite | Premium Transit</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <style id="theme-engine">
-        :root { --p: #E60012; --s: #007AFF; --bg: #1A1A1A; --card: #2A2A2A; --txt: #FFFFFF; }
-    </style>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--txt); overflow-x: hidden; font-weight: 600; transition: background 0.4s; }
-        .status-bar { background: #000; padding: 8px 15px; font-size: 0.65rem; display: flex; justify-content: space-between; border-bottom: 2px solid var(--s); }
-        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; background: #444; margin-right: 5px; }
-        .on { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
-        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--p); background: #111; }
-        .logo { font-weight: 900; color: var(--p); font-size: 1.2rem; }
-        .track { background: #000; padding: 30px 0; overflow-x: auto; display: flex; scroll-snap-type: x mandatory; scrollbar-width: none; border-bottom: 2px solid var(--card); }
-        .stn { min-width: 33.33%; text-align: center; opacity: 0.3; scroll-snap-align: center; transition: 0.4s; position: relative; }
-        .stn.active { opacity: 1; color: var(--s); transform: scale(1.1); font-weight: 900; }
-        .stn-dot { width: 14px; height: 14px; background: #fff; border-radius: 50%; margin: 12px auto; }
-        .active .stn-dot { background: var(--s); box-shadow: 0 0 15px var(--s); border: 2px solid #fff; }
-        .view { display: none; padding: 20px; max-width: 500px; margin: 0 auto; }
-        .view.active { display: block; }
-        .card { background: var(--card); padding: 20px; border-radius: 4px; margin-bottom: 15px; border-left: 5px solid var(--s); }
-        .btn { width: 100%; padding: 16px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; border-radius: 4px; }
-        .btn-blue { background: var(--s); color: white; }
-        .btn-red { background: var(--p); color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--txt); color: var(--txt); }
-        input, select, textarea { width: 100%; padding: 14px; background: #000; border: 2px solid #444; color: #fff; margin: 8px 0 18px 0; border-radius: 4px; }
-        label { font-size: 0.7rem; color: var(--s); text-transform: uppercase; font-weight: 900; }
+        :root { --uber-blue: #276EF1; --uber-black: #000000; --uber-white: #FFFFFF; --uber-gray: #F6F6F6; --uber-dark-gray: #333333; --status-green: #05A357; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Uber Move Text", -apple-system, system-ui, sans-serif; }
+        body { background: var(--uber-white); color: var(--uber-black); overflow-x: hidden; transition: 0.3s; }
+        
+        /* Top Navigation */
+        nav { background: var(--uber-black); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+        .conn-indicator { display: flex; gap: 10px; font-size: 0.7rem; font-weight: 500; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; display: inline-block; }
+        .dot.active { background: var(--status-green); box-shadow: 0 0 8px var(--status-green); }
+
+        /* Views & Layout */
+        .view { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 90vh; }
+        .view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Component Styling */
+        .card { background: white; border: 1px solid #EEE; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .btn { padding: 16px; border: none; font-weight: 600; cursor: pointer; border-radius: 8px; width: 100%; font-size: 1rem; transition: 0.2s; }
+        .btn-black { background: var(--uber-black); color: white; }
+        .btn-blue { background: var(--uber-blue); color: white; }
+        .btn-outline { background: white; border: 1px solid #DDD; color: var(--uber-black); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #DDD; background: var(--uber-gray); border-radius: 8px; margin: 10px 0 20px; font-size: 1rem; }
+        label { font-size: 0.85rem; font-weight: 600; color: #666; }
+
+        /* Admin Grid */
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .admin-grid { grid-template-columns: 1fr; } }
+        
+        /* Trip Stepper (Uber style) */
+        .stepper { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .step { font-size: 0.65rem; text-align: center; color: #AAA; flex: 1; position: relative; }
+        .step.active { color: var(--uber-blue); font-weight: 700; }
+        .step::after { content: ''; height: 2px; width: 100%; background: #EEE; position: absolute; bottom: -8px; left: 0; }
+        .step.active::after { background: var(--uber-blue); }
+
+        /* Fleet Item */
+        .fleet-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #EEE; }
+        .rating { color: #FFC107; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <div class="status-bar">
-        <div><span id="c-dot" class="dot"></span> CLOUD: <span id="c-status">OFFLINE</span></div>
-        <div><span id="p-dot" class="dot"></span> MESH ID: <span id="m-id">---</span></div>
-    </div>
-
-    <header><div class="logo" id="site-logo">HALLS CONSUL</div></header>
-
-    <div id="metro-ui" class="track"></div>
+    <nav>
+        <div class="logo">Halls Elite</div>
+        <div class="conn-indicator">
+            <span><i id="cloud-dot" class="dot"></i> CLOUD</span>
+            <span><i id="mesh-dot" class="dot"></i> MESH</span>
+        </div>
+    </nav>
 
     <div id="view-boot" class="view active">
-        <h2>SYSTEM BOOT</h2>
-        <button class="btn btn-blue" onclick="app.init('CLOUD')">CONNECT TO GLOBAL CLOUD</button>
-        <div style="text-align:center; margin:20px; opacity:0.3; font-size:0.8rem;">-- OR P2P MESH --</div>
-        <input type="text" id="m-target" placeholder="REMOTE PEER ID">
-        <button class="btn btn-outline" onclick="app.init(document.getElementById('m-target').value)">JOIN MESH</button>
+        <h1 style="margin-top:20vh">Premium Shuttle Service</h1>
+        <p style="color:#666; margin-bottom:30px">Select your connection terminal to begin.</p>
+        <button class="btn btn-black" onclick="app.init('CLOUD')">Access Global Network</button>
+        <div style="margin:20px 0; text-align:center; color:#CCC">— OR —</div>
+        <input type="text" id="m-target" placeholder="Enter Mesh Node ID">
+        <button class="btn btn-outline" onclick="app.init(document.getElementById('m-target').value)">Join P2P Mesh</button>
     </div>
 
     <div id="view-login" class="view">
-        <h2>SECURE LOGIN</h2>
-        <label>Operator ID / Email</label>
-        <input type="text" id="u-id" placeholder="Enter your ID">
+        <h2 style="margin-bottom:20px">Sign In</h2>
+        <label>Operator ID or Email</label>
+        <input type="text" id="u-id" placeholder="Enter your credentials">
         <label>Security Pin</label>
         <input type="password" id="u-pin" placeholder="••••">
-        <button class="btn btn-blue" onclick="app.login()">AUTHENTICATE</button>
+        <button class="btn btn-black" onclick="app.login()">Login</button>
     </div>
 
     <div id="view-passenger" class="view">
-        <label>Pickup Station</label><select id="p-from" onchange="app.maskStops()"></select>
-        <label>Destination Stop</label><select id="p-to"></select>
-        <button class="btn btn-blue" onclick="app.request()">REQUEST RIDE</button>
-        <div id="p-active"></div>
+        <div id="p-booking">
+            <h2 style="margin-bottom:20px">Where to?</h2>
+            <div class="card">
+                <label>Pickup Location</label><select id="p-from" onchange="app.maskStops()"></select>
+                <label>Destination Stop</label><select id="p-to"></select>
+                <button class="btn btn-black" onclick="app.request()">Request Shuttle</button>
+            </div>
+        </div>
+        <div id="p-active-ui"></div>
     </div>
 
     <div id="view-driver" class="view">
-        <button class="btn btn-blue" id="d-btn" onclick="app.toggleDuty()">TOGGLE DUTY</button>
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center; background: #000; color: white;">
+            <div>
+                <p style="font-size:0.7rem; opacity:0.7">DUTY STATUS</p>
+                <h3 id="d-status-txt">OFFLINE</h3>
+            </div>
+            <button class="btn btn-blue" style="width:auto; padding:10px 25px" id="d-toggle" onclick="app.toggleDuty()">Go Online</button>
+        </div>
+        
+        <h3 style="margin:25px 0 10px">Incoming Opportunities</h3>
         <div id="d-queue"></div>
-        <button class="btn btn-blue" style="background:white; color:black" onclick="app.next()">NEXT STATION</button>
+
+        <h3 style="margin:25px 0 10px">Active Manifest</h3>
+        <div id="d-manifest"></div>
+        
+        <button id="d-nav-btn" class="btn btn-black" style="display:none; margin-top:30px" onclick="app.next()">Arrived at Next Stop</button>
     </div>
 
     <div id="view-admin" class="view">
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; margin-bottom:20px;">
-            <button class="btn btn-outline" style="font-size:0.5rem; padding:10px" onclick="app.adminTab('visual')">VISUAL</button>
-            <button class="btn btn-outline" style="font-size:0.5rem; padding:10px" onclick="app.adminTab('theme')">THEME</button>
-            <button class="btn btn-outline" style="font-size:0.5rem; padding:10px" onclick="app.adminTab('dna')">DNA</button>
-            <button class="btn btn-outline" style="font-size:0.5rem; padding:10px" onclick="app.adminTab('ledger')">LOGS</button>
+        <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center">
+            <h2>Elite Fleet Management</h2>
+            <span id="m-id-full" style="font-size:0.7rem; color:#888"></span>
         </div>
 
-        <div id="a-visual" class="a-tab">
+        <div class="admin-grid">
             <div class="card">
-                <label>Shuttle Name</label>
-                <input type="text" id="v-sitename" onchange="app.vSyncInputs()">
-                <label>Capacity</label>
-                <input type="number" id="v-cap" onchange="app.vSyncInputs()">
-            </div>
-            
-            <h3>STATIONS</h3>
-            <div id="v-stations-list"></div>
-            <button class="btn btn-blue" style="padding:10px; font-size:0.7rem; margin-bottom:20px;" onclick="app.vAddStation()">+ ADD STATION</button>
-
-            <h3>FLEET USERS</h3>
-            <div id="v-users-list"></div>
-            <button class="btn btn-blue" style="padding:10px; font-size:0.7rem" onclick="app.vAddUser()">+ ADD NEW USER</button>
-            
-            <button class="btn btn-green" style="margin-top:40px; border: 3px solid white;" onclick="app.broadcast()">SAVE & BROADCAST CHANGES</button>
-        </div>
-
-        <div id="a-theme" class="a-tab" style="display:none">
-            <h3>THEME ENGINE</h3>
-            <div class="card">
-                <label>Primary (Accent)</label><input type="color" id="t-p" onchange="app.tUpdate()">
-                <label>Secondary (Utility)</label><input type="color" id="t-s" onchange="app.tUpdate()">
-                <label>Background</label><input type="color" id="t-bg" onchange="app.tUpdate()">
-                <div style="margin-top:15px; display:flex; align-items:center; gap:10px">
-                   <input type="checkbox" id="t-night" style="width:20px; height:20px; margin:0" onchange="app.vSyncInputs()">
-                   <label style="margin:0">Night Mode Force</label>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+                    <h3>Fleet Overview</h3>
+                    <button class="btn btn-black" style="width:auto; padding:5px 15px; font-size:0.7rem" onclick="app.vAddUser()">+ Add Member</button>
                 </div>
-                <button class="btn btn-green" style="margin-top:20px" onclick="app.broadcast()">APPLY THEME</button>
+                <div id="v-users-list" style="max-height:300px; overflow-y:auto"></div>
+                
+                <h3 style="margin:20px 0 10px">System Configuration</h3>
+                <label>Service Name</label><input type="text" id="v-sitename" onchange="app.vSyncInputs()">
+                <label>Vehicle Capacity</label><input type="number" id="v-cap" onchange="app.vSyncInputs()">
+                
+                <h3 style="margin:20px 0 10px">Route Stations</h3>
+                <div id="v-stations-list"></div>
+                <button class="btn btn-outline" style="padding:10px; font-size:0.7rem" onclick="app.vAddStation()">+ Add Station</button>
             </div>
-        </div>
 
-        <div id="a-dna" class="a-tab" style="display:none">
-            <h3>MASTER DNA EDITOR</h3>
-            <textarea id="dna-editor" style="height:350px; font-family:monospace; font-size:10px;"></textarea>
-            <button class="btn btn-red" onclick="app.recode()">OVERWRITE DNA</button>
-        </div>
-
-        <div id="a-ledger" class="a-tab" style="display:none">
-            <h3 id="stat-total">TRIPS: 0</h3>
-            <div id="ledger-box" style="font-size:0.7rem; background:#000; padding:15px; height:200px; overflow-y:auto;"></div>
-            <button class="btn btn-outline" onclick="app.purge()">PURGE SESSION</button>
+            <div class="card" style="background:var(--uber-gray)">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+                    <h3>DNA (JSON Core)</h3>
+                    <button class="btn btn-black" style="width:auto; padding:5px 15px; font-size:0.7rem" onclick="app.broadcast()">Sync & Save</button>
+                </div>
+                <textarea id="dna-editor" style="height:500px; font-family:monospace; font-size:11px; margin:0; border:1px solid #CCC"></textarea>
+                <button class="btn btn-red" style="margin-top:10px; font-size:0.7rem; padding:10px" onclick="app.recode()">Force Overwrite DNA</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // --- SECURE CONFIG ---
         const SB_URL = 'https://wltghngwfykdiwfzefaa.supabase.co'; 
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsdGdobmd3ZnlrZGl3ZnplZmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4Mzk1NjYsImV4cCI6MjA4NDQxNTU2Nn0.WGP8NMxPRheytwipWCGeTBc7nfPJDESu_thFdqOp6qw';
         const sb = supabase.createClient(SB_URL, SB_KEY);
 
         const app = {
-            peer: null, connections: [], 
+            peer: null, connections: [],
             state: {
+                config: { name: "Halls Elite", cap: 12 },
                 stations: ["Chatteswari", "GEC Circle", "Khulshi", "Sitalpur"],
                 users: [
-                    {id: 'shuttle@halls.ac', name: 'Admin', pass: 'H@11$p2p2026', role: 'admin'},
-                    {id: 'backup@halls.ac', name: 'Backup Manager', pass: 'SecureReset2026', role: 'admin'},
-                    {id: 'driver', name: 'D. Miller', pass: '1234', role: 'driver', active: false},
-                    {id: '555', name: 'User-1', pass: '1234', role: 'passenger'}
+                    {id: 'shuttle@halls.ac', name: 'Elite Admin', pass: 'H@11$p2p2026', role: 'admin'},
+                    {id: 'driver', name: 'James Wilson', pass: '1234', role: 'driver', phone: '1234567890', vehicle: 'Black Mercedes V-Class', rating: 4.9, active: false},
+                    {id: '555', name: 'Corporate Guest', pass: '1234', role: 'passenger'}
                 ],
-                config: { name: "Halls Consul", cap: 10, nightMode: false },
-                theme: { p: "#E60012", s: "#007AFF", bg: "#1A1A1A" },
-                trips: [], history: [], curIdx: 0, ts: Date.now()
+                trips: [], curIdx: 0, ts: Date.now()
             },
             user: null,
 
             async init(mode) {
                 this.peer = new Peer();
                 this.peer.on('open', (id) => {
-                    document.getElementById('m-id').innerText = id.substring(0,8);
-                    document.getElementById('p-dot').classList.add('on');
+                    document.getElementById('m-id-full').innerText = "MESH NODE: " + id;
+                    document.getElementById('mesh-dot').classList.add('active');
                     if(mode === 'CLOUD') this.cloudSync();
                     else this.peerConnect(mode);
                 });
@@ -168,8 +181,7 @@
                 const { data } = await sb.from('shuttle_state').select('data').eq('id', 1).single();
                 if(data) {
                     this.state = data.data;
-                    document.getElementById('c-status').innerText = "LIVE";
-                    document.getElementById('c-dot').classList.add('on');
+                    document.getElementById('cloud-dot').classList.add('active');
                     this.showView('login');
                     this.render();
                 }
@@ -195,7 +207,6 @@
                 this.connections.forEach(c => c.send({type:'SYNC', state: this.state}));
                 await sb.from('shuttle_state').update({data: this.state}).eq('id', 1);
                 this.render();
-                alert("SYSTEM SYNCED SUCCESSFULLY");
             },
 
             login() {
@@ -203,7 +214,7 @@
                 const pin = document.getElementById('u-pin').value;
                 const u = this.state.users.find(x => x.id === id && x.pass === pin);
                 if(u) { this.user = u; this.showView(u.role); this.render(); }
-                else alert("LOGIN FAILED");
+                else alert("Authentication Failed.");
             },
 
             showView(v) {
@@ -212,55 +223,131 @@
             },
 
             render() {
-                this.applyTheme();
-                document.getElementById('site-logo').innerText = this.state.config.name;
-                this.renderMetro();
                 if(this.user?.role === 'passenger') this.renderPassenger();
                 if(this.user?.role === 'driver') this.renderDriver();
                 if(this.user?.role === 'admin') this.renderAdmin();
             },
 
-            applyTheme() {
-                const t = this.state.theme;
-                const bg = this.state.config.nightMode ? "#000000" : t.bg;
-                document.getElementById('theme-engine').innerHTML = `:root { --p: ${t.p}; --s: ${t.s}; --bg: ${bg}; --card: #2A2A2A; --txt: #FFFFFF; }`;
+            renderPassenger() {
+                const f = document.getElementById('p-from'); const t = document.getElementById('p-to');
+                if(f.options.length === 0) {
+                    this.state.stations.forEach(s => { f.add(new Option(s,s)); t.add(new Option(s,s)); });
+                }
+                
+                const active = this.state.trips.find(x => x.pId === this.user.id);
+                const area = document.getElementById('p-active-ui');
+                const form = document.getElementById('p-booking');
+
+                if(active) {
+                    form.style.display = 'none';
+                    const drv = this.state.users.find(u => u.id === active.dId);
+                    area.innerHTML = `
+                        <div class="stepper">
+                            <div class="step ${active.status === 'PENDING' ? 'active' : ''}">Requested</div>
+                            <div class="step ${active.status === 'ACCEPTED' ? 'active' : ''}">Accepted</div>
+                            <div class="step ${active.status === 'EN_ROUTE' ? 'active' : ''}">En Route</div>
+                        </div>
+                        <div class="card">
+                            <p style="font-size:0.7rem; color:#888">TRIP STATUS</p>
+                            <h3 style="margin-bottom:15px">${active.status}</h3>
+                            <p style="font-size:0.9rem">${active.from} → ${active.to}</p>
+                            ${active.status === 'ACCEPTED' || active.status === 'EN_ROUTE' ? `
+                                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #EEE; display:flex; align-items:center; gap:15px">
+                                    <div style="width:50px; height:50px; background:#EEE; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold">${drv.name[0]}</div>
+                                    <div>
+                                        <p style="font-weight:700">${drv.name} <span class="rating">★ ${drv.rating}</span></p>
+                                        <p style="font-size:0.8rem; color:#666">${drv.vehicle}</p>
+                                    </div>
+                                </div>
+                                <button class="btn btn-black" style="margin-top:20px" onclick="window.open('tel:${drv.phone}')">Contact Driver</button>
+                            ` : ''}
+                        </div>`;
+                } else {
+                    form.style.display = 'block';
+                    area.innerHTML = '';
+                }
             },
 
-            renderMetro() {
-                const ui = document.getElementById('metro-ui'); ui.innerHTML = '';
-                this.state.stations.forEach((s, i) => {
-                    const wait = this.state.trips.filter(t => t.from === s && t.status === 'PENDING').length;
-                    ui.innerHTML += `<div class="stn ${i === this.state.curIdx ? 'active' : ''}">
-                        ${wait > 0 ? `<div style="position:absolute; top:-10px; right:20%; background:var(--p); color:white; border-radius:50%; width:18px; height:18px; font-size:0.6rem; display:flex; align-items:center; justify-content:center;">${wait}</div>` : ''}
-                        <div class="stn-dot"></div><div style="font-size:0.6rem">${s.toUpperCase()}</div>
+            maskStops() {
+                const p = document.getElementById('p-from').value;
+                Array.from(document.getElementById('p-to').options).forEach(o => o.disabled = (o.value === p));
+            },
+
+            request() {
+                this.state.trips.push({
+                    id: Date.now(), pId: this.user.id, pName: this.user.name,
+                    from: document.getElementById('p-from').value,
+                    to: document.getElementById('p-to').value,
+                    status: 'PENDING'
+                });
+                this.broadcast();
+            },
+
+            renderDriver() {
+                const d = this.user;
+                document.getElementById('d-status-txt').innerText = d.active ? "ONLINE" : "OFFLINE";
+                document.getElementById('d-toggle').innerText = d.active ? "Go Offline" : "Go Online";
+                document.getElementById('d-nav-btn').style.display = d.active ? 'block' : 'none';
+
+                const q = document.getElementById('d-queue'); q.innerHTML = '';
+                this.state.trips.filter(t => t.status === 'PENDING').forEach(t => {
+                    q.innerHTML += `<div class="card">
+                        <div style="display:flex; justify-content:space-between">
+                            <div><p style="font-weight:700">${t.pName}</p><p style="font-size:0.8rem">${t.from} → ${t.to}</p></div>
+                            <button class="btn btn-black" style="width:auto; padding:8px 20px" onclick="app.accept(${t.id})">Accept</button>
+                        </div>
+                    </div>`;
+                });
+
+                const m = document.getElementById('d-manifest'); m.innerHTML = '';
+                this.state.trips.filter(t => t.status === 'ACCEPTED' || t.status === 'EN_ROUTE').forEach(t => {
+                    m.innerHTML += `<div class="card" style="border-left-color:var(--status-green)">
+                        <p style="font-weight:700">${t.pName}</p>
+                        <p style="font-size:0.8rem">Drop-off: ${t.to}</p>
                     </div>`;
                 });
             },
 
+            toggleDuty() { this.user.active = !this.user.active; this.broadcast(); },
+
+            accept(id) {
+                const t = this.state.trips.find(x => x.id === id);
+                t.status = 'ACCEPTED';
+                t.dId = this.user.id;
+                this.broadcast();
+            },
+
+            next() {
+                this.state.curIdx = (this.state.curIdx + 1) % this.state.stations.length;
+                const now = this.state.stations[this.state.curIdx];
+                this.state.trips.forEach(t => {
+                    if(t.dId === this.user.id && t.status === 'ACCEPTED') t.status = 'EN_ROUTE';
+                    if(t.to === now) t.status = 'COMPLETED';
+                });
+                this.state.trips = this.state.trips.filter(t => t.status !== 'COMPLETED');
+                this.broadcast();
+            },
+
             renderAdmin() {
-                // Config
                 document.getElementById('v-sitename').value = this.state.config.name;
                 document.getElementById('v-cap').value = this.state.config.cap;
-                document.getElementById('t-p').value = this.state.theme.p;
-                document.getElementById('t-s').value = this.state.theme.s;
-                document.getElementById('t-bg').value = this.state.theme.bg;
-                document.getElementById('t-night').checked = this.state.config.nightMode;
                 
-                // Station List
                 const sList = document.getElementById('v-stations-list'); sList.innerHTML = '';
                 this.state.stations.forEach((s, i) => {
                     sList.innerHTML += `<div style="display:flex; gap:5px; margin-bottom:5px">
                         <input type="text" value="${s}" onchange="app.state.stations[${i}]=this.value" style="margin:0">
-                        <button class="btn-red" style="width:40px; margin:0; padding:0" onclick="app.vRemoveStation(${i})">X</button>
+                        <button class="btn-red" style="width:40px; margin:0; padding:0; background:none; border:none; color:red" onclick="app.state.stations.splice(${i},1); app.render()">X</button>
                     </div>`;
                 });
 
-                // User List
                 const uList = document.getElementById('v-users-list'); uList.innerHTML = '';
                 this.state.users.forEach((u, i) => {
-                    uList.innerHTML += `<div class="card" style="padding:10px; font-size:0.8rem; border-left-width:3px; margin-bottom:5px;">
-                        <span style="color:var(--s)">[${u.role.toUpperCase()}]</span> ${u.name} (${u.id})
-                        <button class="btn-red" style="float:right; width:auto; padding:2px 10px; font-size:0.6rem; margin:0" onclick="app.vRemoveUser(${i})">DELETE</button>
+                    uList.innerHTML += `<div class="fleet-item">
+                        <div>
+                            <p style="font-weight:700">${u.name} <span style="font-size:0.6rem; color:#888">(${u.role})</span></p>
+                            ${u.rating ? `<span class="rating">★ ${u.rating}</span>` : ''}
+                        </div>
+                        <button style="border:none; background:none; color:red; cursor:pointer" onclick="app.state.users.splice(${i},1); app.render()">Remove</button>
                     </div>`;
                 });
 
@@ -270,64 +357,19 @@
             vSyncInputs() {
                 this.state.config.name = document.getElementById('v-sitename').value;
                 this.state.config.cap = parseInt(document.getElementById('v-cap').value);
-                this.state.config.nightMode = document.getElementById('t-night').checked;
-                this.applyTheme();
             },
 
-            vAddStation() { 
-                const n = prompt("Enter Station Name:"); 
-                if(n) { this.state.stations.push(n); this.render(); }
-            },
-            vRemoveStation(i) {
-                if(confirm("Delete this station?")) { this.state.stations.splice(i, 1); this.render(); }
-            },
-
+            vAddStation() { const n = prompt("Station Name:"); if(n) { this.state.stations.push(n); this.render(); }},
             vAddUser() {
-                const role = prompt("Enter Role (admin, driver, passenger):", "passenger");
-                const name = prompt("Enter Full Name:");
-                const id = prompt("Enter ID / Email:");
-                const pass = prompt("Enter Access PIN (4 digits):");
-                
-                if(role && name && id && pass) {
-                    this.state.users.push({id, name, pass, role, active: false});
-                    this.render();
-                    alert(name + " added to the list. Click SAVE & BROADCAST to finish.");
+                const id = prompt("Email/ID:"); const name = prompt("Name:"); const pass = prompt("PIN:"); const role = prompt("Role (admin, driver, passenger):");
+                if(id && name && pass && role) {
+                    const newUser = {id, name, pass, role, active: false};
+                    if(role === 'driver') { newUser.rating = 5.0; newUser.vehicle = "New Fleet Vehicle"; newUser.phone = "0000000000"; }
+                    this.state.users.push(newUser); this.render();
                 }
             },
-            vRemoveUser(i) {
-                if(confirm("Permanently delete this user?")) { this.state.users.splice(i, 1); this.render(); }
-            },
 
-            tUpdate() {
-                this.state.theme.p = document.getElementById('t-p').value;
-                this.state.theme.s = document.getElementById('t-s').value;
-                this.state.theme.bg = document.getElementById('t-bg').value;
-                this.applyTheme();
-            },
-
-            adminTab(t) {
-                document.querySelectorAll('.a-tab').forEach(el => el.style.display = 'none');
-                document.getElementById('a-' + t).style.display = 'block';
-            },
-
-            request() {
-                this.state.trips.push({id: Date.now(), pId: this.user.id, from: document.getElementById('p-from').value, to: document.getElementById('p-to').value, status: 'PENDING'});
-                this.broadcast();
-            },
-
-            next() {
-                this.state.curIdx = (this.state.curIdx + 1) % this.state.stations.length;
-                this.broadcast();
-            },
-
-            recode() { 
-                try { 
-                    this.state = JSON.parse(document.getElementById('dna-editor').value); 
-                    this.broadcast(); 
-                } catch(e) { alert("ERROR: INVALID DNA CODE"); }
-            },
-
-            purge() { if(confirm("Wipe logs?")) { this.state.history = []; this.broadcast(); } }
+            recode() { try { this.state = JSON.parse(document.getElementById('dna-editor').value); this.broadcast(); } catch(e) { alert("JSON ERROR"); }}
         };
     </script>
 </body>
